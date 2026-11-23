@@ -3,7 +3,7 @@
 // 화면 없이 테스트할 수 있도록 상태 변경 규칙은 순수 함수(reducer)로 둔다.
 // 판정 결과는 여기에 저장하지 않는다. 입력(프로토콜·기록)이 바뀌면 화면이 그때그때 다시 계산한다.
 import { SAMPLE_MEASUREMENTS, SAMPLE_PROTOCOLS } from "@/lib/sampleData";
-import type { Measurement, ProtocolInput } from "@/lib/types";
+import type { DirectEntry, Measurement, ProtocolInput } from "@/lib/types";
 
 export const TABS = [
   { id: "settings", label: "① 측정 기준 설정" },
@@ -16,15 +16,9 @@ export type TabId = (typeof TABS)[number]["id"];
 /** 화면 ①의 한 줄. uid 는 화면에서 줄을 구분하는 번호이고 판정에는 쓰지 않는다. */
 export type ProtocolRow = ProtocolInput & { uid: string };
 
-/** 화면 ②에서 직접 입력한 한 줄. measurement_id 는 입력하지 않고 분석할 때 앱이 붙인다. */
-export interface DirectRow {
+/** 화면 ②에서 직접 입력한 한 줄. uid 는 화면에서 줄을 구분하는 번호이고 판정에는 쓰지 않는다. */
+export interface DirectRow extends DirectEntry {
   uid: string;
-  athleteId: string;
-  athleteLabel: string;
-  protocolId: string;
-  session: string;
-  sessionDate: string;
-  value: string;
 }
 
 export interface AppState {

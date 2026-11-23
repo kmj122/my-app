@@ -5,6 +5,7 @@ import { TABS, type TabId } from "@/state/appState";
 import { useAppState } from "@/state/AppStateProvider";
 import { MeasurementInput } from "./MeasurementInput";
 import { ProtocolSettings } from "./ProtocolSettings";
+import { TeamResultTable } from "./TeamResultTable";
 
 const NEXT_TASK: Record<TabId, string> = {
   settings: "PLAN 10번",
@@ -54,6 +55,8 @@ export function AppTabs() {
           <ProtocolSettings />
         ) : active.id === "input" ? (
           <MeasurementInput />
+        ) : active.id === "results" ? (
+          <TeamResultTable />
         ) : (
           <>
             <h2 className="text-lg font-semibold">{active.label}</h2>

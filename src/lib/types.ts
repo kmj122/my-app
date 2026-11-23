@@ -95,6 +95,16 @@ export interface Measurement {
   value: string; // 숫자 읽기는 판정 단계에서 (NON_NUMERIC)
 }
 
+/** 화면 ②에서 직접 입력한 기록 한 줄. measurement_id 는 입력하지 않고 분석할 때 앱이 붙인다. */
+export interface DirectEntry {
+  athleteId: string;
+  athleteLabel: string;
+  protocolId: string;
+  session: string;
+  sessionDate: string;
+  value: string;
+}
+
 /** 판정에 쓰는 프로토콜. SEM·SWC 가 없거나 0 이하이면 null. MDC95·민감도는 프로토콜의 속성이다. */
 export interface Protocol {
   protocolId: string;

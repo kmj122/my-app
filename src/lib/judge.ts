@@ -45,7 +45,7 @@ export function buildProtocol(input: ProtocolInput): Protocol {
 }
 
 /** 기록 오류 결과: 판정을 중단하고 변화량과 두 판정은 비운다. MDC95·민감도는 프로토콜 속성이라 그대로 알려 준다. */
-function dataError(proto: Protocol | undefined, reason: DataErrorReason): JudgeResult {
+export function dataError(proto: Protocol | undefined, reason: DataErrorReason): JudgeResult {
   return {
     recordStatus: "DATA_ERROR",
     reason,
