@@ -70,3 +70,42 @@ export const CARD_IDS = [
   "WITHIN_NOISE", // ⑦ 그 밖의 모든 경우
 ] as const;
 export type CardId = (typeof CARD_IDS)[number];
+
+// ---- 판정 함수가 주고받는 구조 (PLAN 6번) ----
+
+/** 화면 ①에서 입력한 프로토콜 한 줄. 모두 글자 그대로 보관한다. (숫자 읽기는 buildProtocol 에서) */
+export interface ProtocolInput {
+  protocolId: string;
+  sem: string;
+  swc: string;
+  plausibleMin: string;
+  plausibleMax: string;
+}
+
+/** 판정에 쓰는 프로토콜. SEM·SWC 가 없거나 0 이하이면 null. MDC95·민감도는 프로토콜의 속성이다. */
+export interface Protocol {
+  protocolId: string;
+  sem: number | null;
+  swc: number | null;
+  mdc: number | null;
+  sensitivity: Sensitivity;
+  min: number;
+  max: number;
+}
+
+/** 한 선수·프로토콜 묶음에 속한 기록 한 줄. 입력 그대로(글자) 보관하고 판정 단계에서 검사한다. */
+export interface JudgeRow {
+  session: string;
+  value: string;
+}
+
+/** 묶음 1개의 판정 결과. change·mdc 는 반올림하지 않은 값(없으면 null). */
+export interface JudgeResult {
+  recordStatus: RecordStatus;
+  reason: DataErrorReason | CriteriaReason | "";
+  change: number | null;
+  mdc: number | null;
+  mdcStatus: MdcStatus;
+  swcStatus: SwcStatus;
+  sensitivity: Sensitivity;
+}
