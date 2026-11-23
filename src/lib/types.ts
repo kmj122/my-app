@@ -77,9 +77,22 @@ export type CardId = (typeof CARD_IDS)[number];
 export interface ProtocolInput {
   protocolId: string;
   sem: string;
+  semSource?: string; // SEM 근거 (판정에는 쓰지 않는다)
   swc: string;
+  swcBasis?: string; // SWC 근거 (판정에는 쓰지 않는다)
   plausibleMin: string;
   plausibleMax: string;
+}
+
+/** 측정 기록 한 줄 (화면 ② 한 줄 / CSV 한 줄). 값은 입력 그대로 보관한다. */
+export interface Measurement {
+  measurementId: string;
+  athleteId: string;
+  athleteLabel?: string;
+  protocolId: string;
+  session: string; // 허용값 검사는 판정 단계에서 (INVALID_SESSION)
+  sessionDate?: string;
+  value: string; // 숫자 읽기는 판정 단계에서 (NON_NUMERIC)
 }
 
 /** 판정에 쓰는 프로토콜. SEM·SWC 가 없거나 0 이하이면 null. MDC95·민감도는 프로토콜의 속성이다. */
