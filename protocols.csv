@@ -1,0 +1,5 @@
+protocol_id,test_name,metric,unit,higher_is_better,summary_method,sem_cm,sem_source,sem_condition,swc_cm,swc_basis,plausible_min,plausible_max
+P-A,반동 점프(CMJ),점프 높이,cm,TRUE,MEAN_OF_3,0.40,가상값(검사-재검사 신뢰도 연구가 있다고 가정),동일 장비·3회 평균·오전 측정,1.20,가상값(코치가 설정한 실용적 기준),5,100
+P-B,반동 점프(CMJ),점프 높이,cm,TRUE,BEST_OF_3,1.00,가상값(다른 장비·최고값 사용 가정),다른 장비·3회 중 최고값,1.20,가상값(코치가 설정한 실용적 기준),5,100
+P-C,반동 점프(CMJ),점프 높이,cm,TRUE,MEAN_OF_3,,근거 미확보,신규 장비·신뢰도 자료 없음,1.20,가상값(코치가 설정한 실용적 기준),5,100
+P-D,반동 점프(CMJ),점프 높이,cm,TRUE,MEAN_OF_3,0.40,가상값(검사-재검사 신뢰도 연구가 있다고 가정),동일 장비·3회 평균·오전 측정,,기준 미설정,5,100
