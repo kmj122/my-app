@@ -1,9 +1,15 @@
-// PLAN 1번: 기본 예시 화면을 비우고 앱 제목을 ATHLETE SIGNAL로 바꾼다.
-// 화면 ①~④는 PLAN 9~13번에서 하나씩 만든다.
+// 한 페이지(/) 위쪽에 탭 4개를 두고 화면을 바꾼다. (PLAN 9번)
+// 화면 ①~④의 내용은 PLAN 10~13번에서 하나씩 만든다.
+import { AppTabs } from "@/components/AppTabs";
+import { AppStateProvider } from "@/state/AppStateProvider";
+
 export default function Home() {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-6">
-      <h1 className="text-2xl font-bold tracking-tight">ATHLETE SIGNAL</h1>
+      <h1 className="mb-4 text-2xl font-bold tracking-tight">ATHLETE SIGNAL</h1>
+      <AppStateProvider>
+        <AppTabs />
+      </AppStateProvider>
     </main>
   );
 }
