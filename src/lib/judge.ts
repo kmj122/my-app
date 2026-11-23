@@ -1,6 +1,7 @@
 // 판정 기능: MDC95 계산, 측정 민감도, 기록 오류 검사, 변화량·두 기준 판정
 // Design Ref: §4.1 — verify_athlete_signal_v1_1_r5.py 의 판정 순서를 그대로 따른다.
 // Plan SC: 기존 MDC95·SWC 계산식과 판정 규칙은 바꾸지 않는다.
+import { fixed3 } from "./format";
 import { toFloat, toPositiveFloat } from "./parseNumber";
 import type {
   DataErrorReason,
@@ -20,9 +21,9 @@ export function mdc95(sem: number): number {
   return Z95 * sem * Math.SQRT2;
 }
 
-/** 소수 셋째 자리 문자열 (계산 중에는 반올림하지 않고 표시할 때만 쓴다) */
+/** 소수 셋째 자리 문자열 (계산 중에는 반올림하지 않고 표시할 때만 쓴다. r5 와 같은 반올림) */
 export function fmt3(v: number | null): string {
-  return v === null ? "" : v.toFixed(3);
+  return v === null ? "" : fixed3(v);
 }
 
 export class ProtocolConfigError extends Error {}

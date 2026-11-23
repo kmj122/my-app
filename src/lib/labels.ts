@@ -1,17 +1,18 @@
 // 화면에 보여줄 한국어 이름표와 숫자 표시 규칙
+import { fixed3 } from "./format";
 import type { JudgeResult, Sensitivity } from "./types";
 
 /** 변화량 표시: 부호(+/−)를 붙이고 소수 셋째 자리까지. 0.000 은 부호 없이 표시한다. */
 export function formatSigned(v: number | null): string {
   if (v === null) return "—";
-  const t = Math.abs(v).toFixed(3);
+  const t = fixed3(Math.abs(v));
   if (t === "0.000") return t;
   return `${v > 0 ? "+" : "−"}${t}`;
 }
 
-/** 부호 없는 숫자(MDC95, SWC 등)를 소수 셋째 자리까지 */
+/** 부호 없는 숫자(MDC95, SWC 등)를 소수 셋째 자리까지 (r5 와 같은 반올림) */
 export function format3(v: number | null): string {
-  return v === null ? "—" : v.toFixed(3);
+  return v === null ? "—" : fixed3(v);
 }
 
 export function labelMdc(res: JudgeResult): string {
