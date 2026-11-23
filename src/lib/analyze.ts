@@ -56,7 +56,8 @@ export function analyze(
   const duplicateIds = findDuplicateMeasurementIds(measurements);
 
   const bundles: BundleResult[] = groupBundles(measurements).map((b) => {
-    const proto = registry.protocols.get(b.protocolId.trim());
+    // r5처럼 측정 기록의 protocol_id 는 공백을 지우지 않는다. "P-A " 는 "P-A" 와 다른 ID 라서 UNKNOWN_PROTOCOL 이 된다.
+    const proto = registry.protocols.get(b.protocolId);
     const hasDuplicateId = b.rows.some((r) =>
       duplicateIds.has(r.measurementId.trim()),
     );

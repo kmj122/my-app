@@ -80,7 +80,8 @@ export interface ProtocolRegistry {
 export function buildRegistry(inputs: ProtocolInput[]): ProtocolRegistry {
   const protocols = new Map<string, Protocol>();
   const errors: ProtocolRegistryError[] = [];
-  const seen = new Set<string>();
+  const firstByName = new Map<string, ProtocolInput>();
+  const firstFlagged = new Set<string>();
   const duplicated = new Set<string>();
 
   for (const input of inputs) {
@@ -93,16 +94,19 @@ export function buildRegistry(inputs: ProtocolInput[]): ProtocolRegistry {
       });
       continue;
     }
-    if (seen.has(id)) {
+    const first = firstByName.get(id);
+    if (first) {
       duplicated.add(id);
-      errors.push({
-        uid: input.uid,
-        protocolId: id,
-        message: `프로토콜 이름 ${id}이(가) 중복됩니다.`,
-      });
+      const message = `프로토콜 이름 ${id}이(가) 중복됩니다.`;
+      // 중복된 이름은 처음 나온 행과 뒤에 나온 행 모두에 오류를 알린다.
+      if (!firstFlagged.has(id)) {
+        firstFlagged.add(id);
+        errors.push({ uid: first.uid, protocolId: id, message });
+      }
+      errors.push({ uid: input.uid, protocolId: id, message });
       continue;
     }
-    seen.add(id);
+    firstByName.set(id, input);
     try {
       protocols.set(id, buildProtocol(input));
     } catch (e) {

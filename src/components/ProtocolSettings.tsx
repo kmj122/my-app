@@ -56,7 +56,8 @@ export default function ProtocolSettings() {
             </thead>
             <tbody>
               {protocols.map((p) => {
-                const proto = derive(p);
+                // 오류가 있는 프로토콜은 MDC95·민감도를 정상 결과처럼 보여주지 않는다.
+                const proto = errorByUid.has(p.uid) ? null : derive(p);
                 return (
                   <tr key={p.uid} className="border-t border-slate-200 align-top">
                     <td className="px-3 py-2">
@@ -123,8 +124,8 @@ export default function ProtocolSettings() {
       )}
 
       {protocols.map((p) => {
-        const proto = derive(p);
         const error = errorByUid.get(p.uid);
+        const proto = error ? null : derive(p);
         const notes: string[] = [];
         if (error) notes.push(`${error} 이 프로토콜은 사용할 수 없습니다.`);
         else if (proto) {
