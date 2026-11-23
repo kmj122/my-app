@@ -4,7 +4,6 @@
 // 선수·프로토콜 묶음마다 1행: 변화량, MDC95, 두 판정(따로), 측정 민감도, 기록 상태·사유.
 // 코치 후속 행동 카드와 카드 공통 안내 문구는 PLAN 14~16번에서 연결한다.
 import { useMemo, useState } from "react";
-import { analyze } from "@/lib/analyze";
 import {
   format3,
   formatSigned,
@@ -16,6 +15,7 @@ import {
 } from "@/lib/labels";
 import { RECORD_STATUSES, type RecordStatus } from "@/lib/types";
 import { useAppState } from "@/state/AppStateProvider";
+import { useAnalysis } from "@/state/useAnalysis";
 
 type Filter = "ALL" | RecordStatus;
 
@@ -26,15 +26,9 @@ const STATUS_COLOR: Record<RecordStatus, string> = {
 };
 
 export function TeamResultTable() {
-  const { state, dispatch } = useAppState();
+  const { dispatch } = useAppState();
   const [filter, setFilter] = useState<Filter>("ALL");
-
-  // 입력이 바뀔 때마다 다시 계산한다. (판정 결과는 저장하지 않는다.)
-  const analysis = useMemo(
-    () => analyze(state.protocols, state.directRows, state.csvRows),
-    [state.protocols, state.directRows, state.csvRows],
-  );
-  const { bundles, registryErrors } = analysis;
+  const { bundles, registryErrors } = useAnalysis();
 
   const counts = useMemo(() => {
     const c: Record<Filter, number> = { ALL: bundles.length, OK: 0, DATA_ERROR: 0, CRITERIA_MISSING: 0 };

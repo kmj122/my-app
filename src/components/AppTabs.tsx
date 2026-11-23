@@ -1,18 +1,12 @@
 "use client";
 
-// 4개 화면의 탭 틀 (PLAN 9번). 화면 내용은 PLAN 10~13번에서 하나씩 채운다.
-import { TABS, type TabId } from "@/state/appState";
+// 4개 화면의 탭 틀 (PLAN 9번). 화면 ①~④ 는 PLAN 10~13번에서 만들었다.
+import { TABS } from "@/state/appState";
 import { useAppState } from "@/state/AppStateProvider";
+import { AthleteDetail } from "./AthleteDetail";
 import { MeasurementInput } from "./MeasurementInput";
 import { ProtocolSettings } from "./ProtocolSettings";
 import { TeamResultTable } from "./TeamResultTable";
-
-const NEXT_TASK: Record<TabId, string> = {
-  settings: "PLAN 10번",
-  input: "PLAN 11번",
-  results: "PLAN 12번",
-  detail: "PLAN 13번",
-};
 
 export function AppTabs() {
   const { state, dispatch } = useAppState();
@@ -58,12 +52,7 @@ export function AppTabs() {
         ) : active.id === "results" ? (
           <TeamResultTable />
         ) : (
-          <>
-            <h2 className="text-lg font-semibold">{active.label}</h2>
-            <p className="mt-2 text-sm text-slate-500">
-              이 화면은 {NEXT_TASK[active.id]}에서 만듭니다.
-            </p>
-          </>
+          <AthleteDetail />
         )}
       </section>
     </div>
