@@ -1,6 +1,8 @@
 // PLAN 9번 확인: 화면 상태 규칙 (입력값 보관, 탭 이동, CSV 교체)
 import { describe, expect, it } from "vitest";
 import { initialState, reducer, TABS, type Action, type AppState } from "@/state/appState";
+import { SAMPLE_EXPECTED } from "@/lib/sampleData";
+import { runExpectedCheck } from "@/lib/selfCheck";
 import type { Measurement } from "@/lib/types";
 
 const run = (actions: Action[], from: AppState = initialState) => actions.reduce(reducer, from);
@@ -126,6 +128,56 @@ describe("CSV 기록", () => {
     ]);
     expect(s.csvRows).toEqual([]);
     expect(s.csvFileName).toBeNull();
+  });
+});
+
+describe("예시 데이터 불러오기", () => {
+  const loaded = run([{ type: "loadSample" }]);
+
+  it("프로토콜 4개와 기록 28행, CSV 는 비움", () => {
+    expect(loaded.protocols.map((p) => p.protocolId)).toEqual(["P-A", "P-B", "P-C", "P-D"]);
+    expect(loaded.directRows).toHaveLength(28);
+    expect(loaded.csvRows).toEqual([]);
+    expect(loaded.csvFileName).toBeNull();
+  });
+  it("이미 입력한 프로토콜·기록·CSV 는 교체된다", () => {
+    const s = run(
+      [
+        { type: "addProtocol", initial: { protocolId: "내 프로토콜" } },
+        { type: "addDirectRow" },
+        { type: "setCsv", rows: [m("M1")], fileName: "a.csv" },
+        { type: "loadSample" },
+      ],
+    );
+    expect(s.protocols.map((p) => p.protocolId)).toEqual(["P-A", "P-B", "P-C", "P-D"]);
+    expect(s.directRows).toHaveLength(28);
+    expect(s.csvRows).toEqual([]);
+  });
+  it("줄 번호(uid)가 모두 다르다", () => {
+    const uids = [...loaded.protocols.map((p) => p.uid), ...loaded.directRows.map((r) => r.uid)];
+    expect(new Set(uids).size).toBe(uids.length);
+  });
+  it("불러온 뒤 다시 추가해도 uid 가 겹치지 않는다", () => {
+    const s = reducer(loaded, { type: "addDirectRow" });
+    const uids = s.directRows.map((r) => r.uid);
+    expect(new Set(uids).size).toBe(uids.length);
+  });
+  it("불러온 입력을 그대로 판정하면 기대 결과 14/14 (화면 입력 → 판정이 이어지는지)", () => {
+    const measurements: Measurement[] = loaded.directRows.map((r, i) => ({
+      measurementId: `X${i}`,
+      athleteId: r.athleteId,
+      protocolId: r.protocolId,
+      session: r.session,
+      value: r.value,
+    }));
+    const r = runExpectedCheck({ protocols: loaded.protocols, measurements, expected: SAMPLE_EXPECTED });
+    expect(r.mismatches).toEqual([]);
+    expect(r.passed).toBe(14);
+  });
+  it("값은 글자 그대로 (측정실패·420 도 그대로)", () => {
+    const values = loaded.directRows.map((r) => r.value);
+    expect(values).toContain("측정실패");
+    expect(values).toContain("420");
   });
 });
 

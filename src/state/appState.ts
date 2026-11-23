@@ -2,6 +2,7 @@
 // Plan SC: 선수 기록을 서버·localStorage·IndexedDB에 저장하지 않는다. 새로고침하면 초기화된다.
 // 화면 없이 테스트할 수 있도록 상태 변경 규칙은 순수 함수(reducer)로 둔다.
 // 판정 결과는 여기에 저장하지 않는다. 입력(프로토콜·기록)이 바뀌면 화면이 그때그때 다시 계산한다.
+import { SAMPLE_MEASUREMENTS, SAMPLE_PROTOCOLS } from "@/lib/sampleData";
 import type { Measurement, ProtocolInput } from "@/lib/types";
 
 export const TABS = [
@@ -59,7 +60,8 @@ export type Action =
   | { type: "updateDirectRow"; uid: string; patch: Partial<Omit<DirectRow, "uid">> }
   | { type: "removeDirectRow"; uid: string }
   | { type: "setCsv"; rows: Measurement[]; fileName: string }
-  | { type: "clearCsv" };
+  | { type: "clearCsv" }
+  | { type: "loadSample" };
 
 export function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
@@ -116,5 +118,21 @@ export function reducer(state: AppState, action: Action): AppState {
       return { ...state, csvRows: action.rows, csvFileName: action.fileName };
     case "clearCsv":
       return { ...state, csvRows: [], csvFileName: null };
+
+    // 예시 데이터: 가상 프로토콜 4개와 측정값 28행으로 입력을 통째로 바꾼다. (기록은 직접 입력 행으로 들어가 고쳐 볼 수 있다.)
+    case "loadSample": {
+      let counter = state.counter;
+      const protocols: ProtocolRow[] = SAMPLE_PROTOCOLS.map((p) => ({ ...p, uid: `p${++counter}` }));
+      const directRows: DirectRow[] = SAMPLE_MEASUREMENTS.map((m) => ({
+        uid: `d${++counter}`,
+        athleteId: m.athleteId,
+        athleteLabel: m.athleteLabel ?? "",
+        protocolId: m.protocolId,
+        session: m.session,
+        sessionDate: m.sessionDate ?? "",
+        value: m.value,
+      }));
+      return { ...state, counter, protocols, directRows, csvRows: [], csvFileName: null };
+    }
   }
 }

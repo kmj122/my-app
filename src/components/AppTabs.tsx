@@ -3,6 +3,7 @@
 // 4개 화면의 탭 틀 (PLAN 9번). 화면 내용은 PLAN 10~13번에서 하나씩 채운다.
 import { TABS, type TabId } from "@/state/appState";
 import { useAppState } from "@/state/AppStateProvider";
+import { MeasurementInput } from "./MeasurementInput";
 import { ProtocolSettings } from "./ProtocolSettings";
 
 const NEXT_TASK: Record<TabId, string> = {
@@ -51,6 +52,8 @@ export function AppTabs() {
       >
         {active.id === "settings" ? (
           <ProtocolSettings />
+        ) : active.id === "input" ? (
+          <MeasurementInput />
         ) : (
           <>
             <h2 className="text-lg font-semibold">{active.label}</h2>
