@@ -194,7 +194,7 @@ export function AthleteDetail() {
       <p data-testid="card-footer" className="mt-4 text-xs text-slate-600">
         {FOOTER}
       </p>
-      <p className="mt-2 text-xs text-slate-500">가상 데이터·가상 기준값입니다.</p>
+      {state.sampleLoaded && <p className="mt-2 text-xs text-slate-500">가상 데이터·가상 기준값입니다.</p>}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { useAppState } from "@/state/AppStateProvider";
 import { AthleteDetail } from "./AthleteDetail";
 import { MeasurementInput } from "./MeasurementInput";
 import { ProtocolSettings } from "./ProtocolSettings";
+import { SimpleCheck } from "./SimpleCheck";
 import { TeamResultTable } from "./TeamResultTable";
 
 export function AppTabs() {
@@ -45,7 +46,9 @@ export function AppTabs() {
         aria-labelledby={`tab-${active.id}`}
         className="py-6"
       >
-        {active.id === "settings" ? (
+        {active.id === "simple" ? (
+          <SimpleCheck />
+        ) : active.id === "settings" ? (
           <ProtocolSettings />
         ) : active.id === "input" ? (
           <MeasurementInput />

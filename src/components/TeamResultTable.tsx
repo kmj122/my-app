@@ -28,7 +28,7 @@ const STATUS_COLOR: Record<RecordStatus, string> = {
 };
 
 export function TeamResultTable() {
-  const { dispatch } = useAppState();
+  const { state, dispatch } = useAppState();
   const [filter, setFilter] = useState<Filter>("ALL");
   const { bundles, registryErrors } = useAnalysis();
 
@@ -160,7 +160,7 @@ export function TeamResultTable() {
           {FOOTER}
         </p>
       )}
-      <p className="mt-2 text-xs text-slate-500">가상 데이터·가상 기준값입니다.</p>
+      {state.sampleLoaded && <p className="mt-2 text-xs text-slate-500">가상 데이터·가상 기준값입니다.</p>}
     </div>
   );
 }

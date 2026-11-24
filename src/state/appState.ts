@@ -3,10 +3,12 @@
 // 화면 없이 테스트할 수 있도록 상태 변경 규칙은 순수 함수(reducer)로 둔다.
 // 판정 결과는 여기에 저장하지 않는다. 입력(프로토콜·기록)이 바뀌면 화면이 그때그때 다시 계산한다.
 import { SAMPLE_MEASUREMENTS, SAMPLE_PROTOCOLS } from "@/lib/sampleData";
+import { defaultProtocolInput, DEFAULT_PROTOCOL_ID, simpleEntries } from "@/lib/simpleMode";
 import type { DirectEntry, Measurement, ProtocolInput } from "@/lib/types";
 
 export const TABS = [
-  { id: "settings", label: "① 측정 기준 설정" },
+  { id: "simple", label: "기록 입력" },
+  { id: "settings", label: "① 측정 기준 설정 (고급)" },
   { id: "input", label: "② 측정값 입력" },
   { id: "results", label: "③ 팀 결과표" },
   { id: "detail", label: "④ 선수 상세" },
@@ -32,16 +34,23 @@ export interface AppState {
   csvFileName: string | null;
   /** 줄 번호(uid)를 만들기 위한 순번 */
   counter: number;
+  /** 첫 화면(기록 입력)에서 방금 확인한 선수. 없으면 null */
+  simpleAthleteId: string | null;
+  /** 예시 데이터를 불러온 상태인지. "가상 데이터" 문구는 이때만 보여 준다. */
+  sampleLoaded: boolean;
 }
 
 export const initialState: AppState = {
-  tab: "settings",
+  tab: "simple",
   selectedKey: null,
-  protocols: [],
+  // 간단 모드가 쓰는 기본 프로토콜 하나. SEM·SWC 는 비어 있고 고급 설정에서 입력한다.
+  protocols: [{ ...defaultProtocolInput(), uid: "p0" }],
   directRows: [],
   csvRows: [],
   csvFileName: null,
   counter: 0,
+  simpleAthleteId: null,
+  sampleLoaded: false,
 };
 
 export type Action =
@@ -55,7 +64,9 @@ export type Action =
   | { type: "removeDirectRow"; uid: string }
   | { type: "setCsv"; rows: Measurement[]; fileName: string }
   | { type: "clearCsv" }
-  | { type: "loadSample" };
+  | { type: "loadSample" }
+  | { type: "addSimpleRecord"; name: string; baseline: string; current: string }
+  | { type: "resetSimple" };
 
 export function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
@@ -126,7 +137,22 @@ export function reducer(state: AppState, action: Action): AppState {
         sessionDate: m.sessionDate ?? "",
         value: m.value,
       }));
-      return { ...state, counter, protocols, directRows, csvRows: [], csvFileName: null };
+      return { ...state, counter, protocols, directRows, csvRows: [], csvFileName: null, simpleAthleteId: null, sampleLoaded: true };
     }
+
+    // 간단 모드 입력: 기본 프로토콜로 이전(BASELINE)·오늘(CURRENT) 두 줄을 넣는다.
+    // 같은 이름의 이전 간단 입력이 있으면 새 입력으로 바꾼다. (여러 날짜 누적은 아직 지원하지 않는다.)
+    case "addSimpleRecord": {
+      const entries = simpleEntries(action.name, action.baseline, action.current);
+      const athleteId = entries[0].athleteId;
+      let counter = state.counter;
+      const rows: DirectRow[] = entries.map((e) => ({ ...e, uid: `d${++counter}` }));
+      const kept = state.directRows.filter((r) => !(r.protocolId === DEFAULT_PROTOCOL_ID && r.athleteId.trim() === athleteId));
+      const hasDefault = state.protocols.some((p) => p.protocolId.trim() === DEFAULT_PROTOCOL_ID);
+      const protocols = hasDefault ? state.protocols : [...state.protocols, { ...defaultProtocolInput(), uid: `p${++counter}` }];
+      return { ...state, counter, protocols, directRows: [...kept, ...rows], simpleAthleteId: athleteId };
+    }
+    case "resetSimple":
+      return { ...state, simpleAthleteId: null };
   }
 }

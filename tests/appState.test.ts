@@ -5,7 +5,9 @@ import { SAMPLE_EXPECTED } from "@/lib/sampleData";
 import { runExpectedCheck } from "@/lib/selfCheck";
 import type { Measurement } from "@/lib/types";
 
-const run = (actions: Action[], from: AppState = initialState) => actions.reduce(reducer, from);
+// 아래 규칙 테스트는 프로토콜이 하나도 없는 상태에서 시작한다. (실제 첫 화면에는 기본 프로토콜 하나가 들어 있다.)
+const EMPTY: AppState = { ...initialState, protocols: [] };
+const run = (actions: Action[], from: AppState = EMPTY) => actions.reduce(reducer, from);
 
 const m = (id: string): Measurement => ({
   measurementId: id,
@@ -16,18 +18,21 @@ const m = (id: string): Measurement => ({
 });
 
 describe("초기 상태", () => {
-  it("비어 있고 ① 화면에서 시작한다", () => {
+  it("기록 입력 화면에서 시작하고, 기록은 비어 있으며 기본 프로토콜 하나만 있다 (SEM·SWC 는 비어 있음)", () => {
     expect(initialState).toMatchObject({
-      tab: "settings",
+      tab: "simple",
       selectedKey: null,
-      protocols: [],
       directRows: [],
       csvRows: [],
       csvFileName: null,
+      simpleAthleteId: null,
+      sampleLoaded: false,
     });
+    expect(initialState.protocols).toHaveLength(1);
+    expect(initialState.protocols[0]).toMatchObject({ protocolId: "기본 측정", sem: "", swc: "" });
   });
-  it("탭은 ①~④ 4개", () => {
-    expect(TABS.map((t) => t.id)).toEqual(["settings", "input", "results", "detail"]);
+  it("탭은 기록 입력 + ①~④ 5개", () => {
+    expect(TABS.map((t) => t.id)).toEqual(["simple", "settings", "input", "results", "detail"]);
   });
 });
 
