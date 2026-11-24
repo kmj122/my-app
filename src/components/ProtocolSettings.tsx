@@ -50,7 +50,7 @@ export function ProtocolSettings() {
   const setDef = (patch: Record<string, string>) => def && dispatch({ type: "updateProtocol", uid: def.uid, patch });
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div className="mx-auto max-w-4xl">
       <h2 className="text-2xl font-bold tracking-tight text-navy-900">분석 설정</h2>
       <p className="mt-1 text-sm text-slate-600">
         측정 장비·절차의 자료나 코치가 정한 기준이 있을 때만 입력하세요. 모르면 비워 두어도 됩니다. 비워 두면 변화량만 보여 주고,
@@ -186,7 +186,7 @@ export function ProtocolSettings() {
                         </td>
                         <td className="px-2 py-2 tabular-nums">{v.mdc === null ? "—" : fmt3(v.mdc)}</td>
                         <td className="px-2 py-2">
-                          <span className={`inline-block rounded px-2 py-0.5 text-xs font-medium ${BADGE_COLOR[v.sensitivity]}`}>
+                          <span className={`inline-block whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold ${BADGE_COLOR[v.sensitivity]}`}>
                             {v.error ? "—" : SENSITIVITY_LABEL[v.sensitivity]}
                           </span>
                         </td>

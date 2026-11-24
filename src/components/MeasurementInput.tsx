@@ -115,7 +115,7 @@ export function MeasurementInput() {
           <table className="w-full min-w-[52rem] text-left text-sm">
             <thead className="bg-slate-50 text-xs font-semibold text-slate-500">
               <tr>
-                <th className="px-2 py-2 font-medium">구분</th>
+                <th className="px-2 py-2 font-medium whitespace-nowrap">구분</th>
                 <th className="px-2 py-2 font-medium">선수 ID</th>
                 <th className="px-2 py-2 font-medium">표시명 (선택)</th>
                 <th className="px-2 py-2 font-medium">프로토콜</th>
@@ -128,7 +128,7 @@ export function MeasurementInput() {
             <tbody>
               {state.csvRows.map((r, i) => (
                 <tr key={`csv-${i}`} className="border-t border-slate-200 text-slate-700">
-                  <td className="px-2 py-2 text-xs text-slate-500">CSV</td>
+                  <td className="px-2 py-2 text-xs whitespace-nowrap text-slate-500">CSV</td>
                   <td className="px-2 py-2">{r.athleteId}</td>
                   <td className="px-2 py-2">{r.athleteLabel}</td>
                   <td className="px-2 py-2">{r.protocolId}</td>
@@ -144,7 +144,7 @@ export function MeasurementInput() {
                 const n = state.csvRows.length + i + 1;
                 return (
                   <tr key={r.uid} className="border-t border-slate-200">
-                    <td className="px-2 py-2 text-xs text-slate-500">직접</td>
+                    <td className="px-2 py-2 text-xs whitespace-nowrap text-slate-500">직접</td>
                     <td className="px-2 py-2">
                       <input className={inputClass} aria-label={`${n}번째 선수 ID`} value={r.athleteId} onChange={(e) => update({ athleteId: e.target.value })} />
                     </td>
@@ -155,7 +155,7 @@ export function MeasurementInput() {
                       <input className={inputClass} aria-label={`${n}번째 프로토콜`} value={r.protocolId} onChange={(e) => update({ protocolId: e.target.value })} />
                     </td>
                     <td className="px-2 py-2">
-                      <select className={inputClass} aria-label={`${n}번째 세션`} value={r.session} onChange={(e) => update({ session: e.target.value })}>
+                      <select className={inputClass + " min-w-[8.5rem]"} aria-label={`${n}번째 세션`} value={r.session} onChange={(e) => update({ session: e.target.value })}>
                         <option value="BASELINE">BASELINE</option>
                         <option value="CURRENT">CURRENT</option>
                       </select>

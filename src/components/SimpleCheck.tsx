@@ -10,6 +10,7 @@ import { useAnalysis } from "@/state/useAnalysis";
 import { ChangeResult } from "./ChangeResult";
 import { CARD } from "./direction";
 import { MeasurementInput } from "./MeasurementInput";
+import { SampleNotice } from "./SampleNotice";
 
 const INPUT =
   "mt-1.5 h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-navy-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100";
@@ -119,7 +120,7 @@ export function SimpleCheck() {
         </div>
       </details>
 
-      {state.sampleLoaded && <p className="mt-4 text-xs text-slate-500">가상 데이터·가상 기준값입니다.</p>}
+      {state.sampleLoaded && <SampleNotice className="mt-4" />}
     </div>
   );
 }

@@ -19,6 +19,7 @@ import { selectCard } from "@/lib/selectCard";
 import { useAppState } from "@/state/AppStateProvider";
 import { useAnalysis } from "@/state/useAnalysis";
 import { ChangeResult } from "./ChangeResult";
+import { SampleNotice } from "./SampleNotice";
 
 const AXIS_Y = 100;
 
@@ -53,7 +54,7 @@ export function AthleteDetail() {
   const showCriteriaCard = j.recordStatus === "CRITERIA_MISSING";
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-3xl">
       <button
         type="button"
         className="rounded-lg px-2 py-1 text-sm font-semibold text-blue-700 hover:bg-blue-50"
@@ -85,7 +86,7 @@ export function AthleteDetail() {
             <span className="font-semibold tabular-nums">(변화량 {formatSigned(j.change)} cm)</span>
           </p>
 
-          <figure className="mt-4 rounded-md border border-slate-200 bg-white p-3">
+          <figure className="mt-4 rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200">
             <svg
               viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}
               className="h-auto w-full"
@@ -199,7 +200,7 @@ export function AthleteDetail() {
       <p data-testid="card-footer" className="mt-4 text-xs text-slate-600">
         {FOOTER}
       </p>
-      {state.sampleLoaded && <p className="mt-2 text-xs text-slate-500">가상 데이터·가상 기준값입니다.</p>}
+      {state.sampleLoaded && <SampleNotice className="mt-3" />}
     </div>
   );
 }

@@ -16,6 +16,7 @@ import { describeSimple } from "@/lib/simpleMode";
 import { RECORD_STATUSES, type RecordStatus } from "@/lib/types";
 import { useAppState } from "@/state/AppStateProvider";
 import { DIRECTION_STYLE } from "./direction";
+import { SampleNotice } from "./SampleNotice";
 import { useAnalysis } from "@/state/useAnalysis";
 
 type Filter = "ALL" | RecordStatus;
@@ -206,7 +207,7 @@ export function TeamResultTable() {
           {FOOTER}
         </p>
       )}
-      {state.sampleLoaded && <p className="mt-2 text-xs text-slate-500">가상 데이터·가상 기준값입니다.</p>}
+      {state.sampleLoaded && <SampleNotice className="mt-3" />}
     </div>
   );
 }
