@@ -64,6 +64,13 @@ describe("addSimpleRecord · resetSimple", () => {
     expect(s.protocols.some((p) => p.protocolId === DEFAULT_PROTOCOL_ID)).toBe(true);
     expect(view(s, "김선수").kind).toBe("change");
   });
+  it("예시 데이터의 가상 SEM·SWC 는 직접 입력한 기록에 적용되지 않는다 (정밀 분석 없음, 변화량만)", () => {
+    const s = run([{ type: "loadSample" }, add("김선수", "40", "42")]);
+    const x = view(s, "김선수");
+    expect(x.kind === "change" && x.precise === null).toBe(true);
+    const def = s.protocols.find((p) => p.protocolId === DEFAULT_PROTOCOL_ID)!;
+    expect([def.sem, def.swc]).toEqual(["", ""]);
+  });
   it("resetSimple 은 방금 본 선수만 지우고 입력한 기록은 남긴다", () => {
     const s = run([add("김선수", "40", "42"), { type: "resetSimple" }]);
     expect(s.simpleAthleteId).toBeNull();

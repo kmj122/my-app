@@ -110,6 +110,11 @@ export function ProtocolSettings() {
       <details className="mt-6 rounded-md border border-slate-300 bg-white" data-testid="advanced-settings">
         <summary className="cursor-pointer px-4 py-3 text-sm font-medium">상세 설정 펼치기 (측정 방식별 설정 · 근거 · 허용 범위 · 측정 민감도 · 자가 검증)</summary>
         <div className="border-t border-slate-200 p-4">
+      {state.sampleLoaded && (
+        <p data-testid="sample-settings-note" className="mb-3 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-900">
+          예시 데이터의 측정 방식(P-A~P-D)에 들어 있는 SEM·SWC는 시연용 가상 예시값입니다. 「기본 측정」과 실제 선수 기록에는 자동으로 적용되지 않습니다.
+        </p>
+      )}
       <p className="text-sm text-slate-600">
         측정 방식(프로토콜)마다 측정 오차(SEM)와 중요 변화 기준(SWC)을 입력하세요. MDC95는 SEM으로 자동 계산합니다. (MDC95 = 1.96 × SEM × √2)
       </p>

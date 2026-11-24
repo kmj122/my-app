@@ -14,6 +14,7 @@ import {
   SENSITIVITY_KO,
   SWC_STATUS_KO,
 } from "@/lib/labels";
+import { SAMPLE_PROTOCOLS } from "@/lib/sampleData";
 import { selectCard } from "@/lib/selectCard";
 import { useAppState } from "@/state/AppStateProvider";
 import { useAnalysis } from "@/state/useAnalysis";
@@ -69,6 +70,11 @@ export function AthleteDetail() {
       <details className="mt-6 rounded-md border border-slate-300 bg-white" data-testid="detail-analysis">
         <summary className="cursor-pointer px-4 py-3 text-sm font-medium">상세 분석 보기 (측정 오차 기준·실용 기준 그래프와 판정)</summary>
         <div className="border-t border-slate-200 p-4">
+          {state.sampleLoaded && SAMPLE_PROTOCOLS.some((p) => p.protocolId === bundle.protocolId) && (
+            <p data-testid="sample-criteria-note" className="mb-2 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-900">
+              이 화면의 측정 오차(SEM)와 중요 변화 기준(SWC)은 시연용 가상 예시값입니다. 실제 선수 기록에는 자동으로 적용되지 않습니다.
+            </p>
+          )}
           <p className="text-sm text-slate-700">
             측정 방식: {bundle.protocolId} · 변화량은 이전 → 오늘{" "}
             <span className="font-semibold tabular-nums">(변화량 {formatSigned(j.change)} cm)</span>
