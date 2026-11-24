@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 체력측정 (ATHLETE SIGNAL)
 
-## Getting Started
+국가대표·프로선수의 **점프 높이(반동점프, CMJ) 기록 변화**를 이전 기록과 비교하고, 측정 기준이 있으면 **측정 오차 기준(MDC95)** 과 **중요 변화 기준(SWC)** 으로 각각 판정해 코치가 **다음에 확인할 행동 카드 1개**를 안내하는 웹 앱입니다.
 
-First, run the development server:
+> 이 저장소의 모든 선수 기록과 SEM·SWC 값은 시연용 **가상 데이터**입니다.
+
+## 왜 만들었나
+
+기록이 오르거나 내렸을 때, 그 차이가 측정 오차를 넘는지, 중요하게 볼 만한 변화인지 판단하기 어렵습니다. 그래서 작은 변화에 훈련 계획을 성급히 바꾸거나 의미 있는 변화를 놓치기 쉽습니다. 이 앱은 코치가 입력한 기준으로 변화의 의미를 일관되게 판정하고, 다음 행동을 안내합니다. (변화의 원인이나 훈련 효과는 판단하지 않습니다.)
+
+## 주요 기능
+
+- **기록 입력:** 선수 이름, 이전·오늘 점프 높이를 넣으면 `40.000 → 42.000 cm`, `+2.000 cm 증가`와 비교 그래프를 바로 보여 줍니다. 여러 선수는 표 입력·CSV 업로드·예시 데이터로 한 번에 넣을 수 있습니다.
+- **분석 설정:** 측정 오차 자료(SEM)와 중요하게 볼 변화 크기(SWC)를 입력하면 MDC95를 자동 계산합니다. 기준이 없으면 변화량만 보여 주고 의미는 판단하지 않으며, 앱이 값을 임의로 채우지 않습니다.
+- **코치 후속 행동 카드 7종:** 판정 결과에 따라 정확히 1개를 고르고, 한 줄 요약과 '자세히 보기'를 제공합니다.
+- **팀 결과:** 여러 선수의 변화량과 다음 행동을 한눈에 비교하고, 선수 상세 그래프를 엽니다.
+- **자가 검증:** 분석 설정 → 상세 설정 펼치기 → 「자가 검증 실행」 (기대 결과 14, 추가 검사 11, 카드 14, 카드 검사 4).
+
+## 핵심 시연: 같은 +2cm, 다른 결과
+
+예시 데이터를 불러오면 가상선수 01과 02는 둘 다 40 → 42 cm(+2.000 cm 증가)입니다. 측정 방식의 오차 기준이 달라 결과가 갈립니다.
+
+| 선수 | 측정 오차 기준(MDC95, 가상값) | 분석 카드 |
+|---|---|---|
+| 가상선수 01 | 1.109 cm | 두 기준을 넘는 증가 관찰 |
+| 가상선수 02 | 2.772 cm | 측정 방식 점검 필요 |
+
+순서: 「기록 입력」 → 「여러 선수 한 번에 입력」 → 「예시 데이터 불러오기」 → 「팀 결과」에서 01·02 비교. 자세한 안내는 [DEMO.md](DEMO.md)를 보세요.
+
+## 지켜야 할 규칙
+
+- MDC95 = 1.96 × SEM × √2, 변화량 = 오늘 − 이전(소수 셋째 자리 표시)
+- 측정 오차 초과는 `|변화량| > MDC95 + 1e-9`, 중요 변화 충족은 `|변화량| ≥ SWC − 1e-9`일 때만 적용하고, 두 판정은 합치지 않습니다.
+- 카드 문구는 미리 정한 원문(`verify_athlete_signal_v1_1_r5.py`)과 글자 그대로 같으며, 실행 중 새 문구를 만들지 않습니다.
+- 선수 기록은 서버·`localStorage`·`IndexedDB`에 저장하지 않습니다. 모든 계산은 브라우저 안에서 하고, 새로고침하면 입력이 사라집니다.
+
+## 기술 스택
+
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS 4 · Vitest. 서버 API, 데이터베이스, 외부 AI 서비스, 환경 변수는 쓰지 않습니다.
+
+## 실행하기
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:3000
+npm test         # 자동 테스트 (432건)
+npm run lint
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 문서
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- [PRD.md](PRD.md): 서비스 기획서
+- [PLAN.md](PLAN.md): 개발 계획서
+- [DESIGN.md](DESIGN.md): 설계 문서
+- [DEMO.md](DEMO.md): 시연 안내
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`protocols.csv`, `measurements.csv`, `expected_results.csv`, `card_expected_results.csv`, `verify_athlete_signal_v1_1_r5.py`는 개발·검증용 가상 자료이며 웹사이트의 `public` 폴더에는 들어 있지 않습니다.
