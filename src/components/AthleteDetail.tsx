@@ -2,8 +2,11 @@
 
 // 화면 ④ 선수 상세 그래프 (PLAN 13번)
 // 변화량을 점으로, 0 을 중심으로 한 ±MDC95 띠를 음영으로, ±SWC 를 점선으로 같은 눈금에 그린다.
-// 코치 후속 행동 카드와 '자세히 보기'는 PLAN 14~16번에서 연결한다.
+// 그래프 아래에 코치 후속 행동 카드(한 줄 요약 + '자세히 보기')를 두고, 공통 안내 문구는 맨 아래 한 번만 보인다.
+import { useState } from "react";
+import { cardShort, cardText, FOOTER } from "@/lib/cardText";
 import { buildDetailChart, CHART_HEIGHT, CHART_WIDTH } from "@/lib/detailChart";
+import { selectCard } from "@/lib/selectCard";
 import {
   format3,
   formatSigned,
@@ -21,6 +24,7 @@ const AXIS_Y = 100;
 export function AthleteDetail() {
   const { state, dispatch } = useAppState();
   const { bundles } = useAnalysis();
+  const [open, setOpen] = useState(false);
   const bundle = state.selectedKey === null ? undefined : bundles.find((b) => b.key === state.selectedKey);
 
   if (!bundle) {
@@ -45,6 +49,9 @@ export function AthleteDetail() {
   const chart = buildDetailChart(bundle);
   const { x } = chart;
   const reason = reasonKo(j.reason);
+  const sel = selectCard(j);
+  const short = cardShort(sel.card, sel.detail);
+  const text = cardText(sel.card, sel.detail);
 
   return (
     <div>
@@ -160,7 +167,34 @@ export function AthleteDetail() {
         </dd>
       </dl>
 
-      <p className="mt-4 text-xs text-slate-500">가상 데이터·가상 기준값입니다.</p>
+      <section aria-label="코치 후속 행동 카드" data-testid="action-card" className="mt-6 rounded-md border border-slate-400 bg-white p-4">
+        <h3 className="text-sm font-semibold text-slate-500">코치 후속 행동 카드</h3>
+        <p className="mt-2 text-sm text-slate-700">{short[0]}</p>
+        <p className="mt-1 font-semibold text-slate-900">{short[1]}</p>
+        <button
+          type="button"
+          aria-expanded={open}
+          onClick={() => setOpen((v) => !v)}
+          className="mt-3 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm hover:bg-slate-50"
+        >
+          {open ? "접기" : "자세히 보기"}
+        </button>
+        {open && (
+          <div data-testid="card-detail" className="mt-3 space-y-1 border-t border-slate-200 pt-3 text-sm">
+            <p className="font-semibold">{text.title}</p>
+            <p className="text-slate-700">{text.body}</p>
+            <p className="text-slate-700">
+              <span className="font-medium">다음 행동: </span>
+              {text.nextAction}
+            </p>
+          </div>
+        )}
+      </section>
+
+      <p data-testid="card-footer" className="mt-4 text-xs text-slate-600">
+        {FOOTER}
+      </p>
+      <p className="mt-2 text-xs text-slate-500">가상 데이터·가상 기준값입니다.</p>
     </div>
   );
 }

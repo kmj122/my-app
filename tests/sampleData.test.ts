@@ -3,7 +3,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { SAMPLE_EXPECTED, SAMPLE_MEASUREMENTS, SAMPLE_PROTOCOLS } from "@/lib/sampleData";
+import { SAMPLE_CARD_EXPECTED, SAMPLE_EXPECTED,SAMPLE_MEASUREMENTS, SAMPLE_PROTOCOLS } from "@/lib/sampleData";
 
 /** 이 CSV 3개에는 따옴표가 없어서 쉼표로 나누는 간단한 읽기로 충분하다. (테스트 전용) */
 function readCsv(name: string): Record<string, string>[] {
@@ -48,6 +48,21 @@ describe("내장 사본 = 실제 CSV", () => {
         session: r.session,
         sessionDate: r.session_date,
         value: r.value,
+      });
+    });
+  });
+
+  it("card_expected_results.csv: 14행", () => {
+    const rows = readCsv("card_expected_results.csv");
+    expect(rows.length).toBe(14);
+    expect(SAMPLE_CARD_EXPECTED.length).toBe(rows.length);
+    rows.forEach((r, i) => {
+      expect(SAMPLE_CARD_EXPECTED[i]).toEqual({
+        caseId: r.case_id,
+        athleteId: r.athlete_id,
+        protocolId: r.protocol_id,
+        card: r.expected_card,
+        detail: r.expected_detail,
       });
     });
   });

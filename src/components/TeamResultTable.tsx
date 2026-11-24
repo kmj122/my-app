@@ -2,7 +2,7 @@
 
 // 화면 ③ 팀 결과표 (PLAN 12번)
 // 선수·프로토콜 묶음마다 1행: 변화량, MDC95, 두 판정(따로), 측정 민감도, 기록 상태·사유.
-// 코치 후속 행동 카드와 카드 공통 안내 문구는 PLAN 14~16번에서 연결한다.
+// 마지막 칸에 코치 후속 행동 카드의 "분석 결과 한 줄 + 다음 행동 한 줄"을 보이고, 카드 공통 안내 문구는 맨 아래 한 번만 둔다.
 import { useMemo, useState } from "react";
 import {
   format3,
@@ -13,6 +13,8 @@ import {
   SENSITIVITY_KO,
   SWC_STATUS_KO,
 } from "@/lib/labels";
+import { cardShort, FOOTER } from "@/lib/cardText";
+import { selectCard } from "@/lib/selectCard";
 import { RECORD_STATUSES, type RecordStatus } from "@/lib/types";
 import { useAppState } from "@/state/AppStateProvider";
 import { useAnalysis } from "@/state/useAnalysis";
@@ -91,12 +93,13 @@ export function TeamResultTable() {
                   <th className="px-2 py-2 font-medium">실용 판정</th>
                   <th className="px-2 py-2 font-medium">측정 민감도</th>
                   <th className="px-2 py-2 font-medium">기록 상태</th>
+                  <th className="px-2 py-2 font-medium">다음 행동 한 줄</th>
                 </tr>
               </thead>
               <tbody>
                 {shown.length === 0 ? (
                   <tr>
-                    <td colSpan={10} className="px-2 py-4 text-center text-slate-500">
+                    <td colSpan={11}className="px-2 py-4 text-center text-slate-500">
                       이 상태의 기록이 없습니다.
                     </td>
                   </tr>
@@ -104,6 +107,8 @@ export function TeamResultTable() {
                   shown.map((b) => {
                     const j = b.judge;
                     const reason = reasonKo(j.reason);
+                    const sel = selectCard(j);
+                    const short = cardShort(sel.card, sel.detail);
                     return (
                       <tr
                         key={b.key}
@@ -136,6 +141,10 @@ export function TeamResultTable() {
                           </span>
                           {reason && <div className="mt-1 text-xs text-slate-600">{reason}</div>}
                         </td>
+                        <td className="px-2 py-2" data-testid="card-short">
+                          <div className="text-xs text-slate-600">{short[0]}</div>
+                          <div className="font-medium text-slate-900">{short[1]}</div>
+                        </td>
                       </tr>
                     );
                   })
@@ -146,7 +155,12 @@ export function TeamResultTable() {
         </>
       )}
 
-      <p className="mt-4 text-xs text-slate-500">가상 데이터·가상 기준값입니다.</p>
+      {bundles.length > 0 && (
+        <p data-testid="card-footer" className="mt-4 text-xs text-slate-600">
+          {FOOTER}
+        </p>
+      )}
+      <p className="mt-2 text-xs text-slate-500">가상 데이터·가상 기준값입니다.</p>
     </div>
   );
 }

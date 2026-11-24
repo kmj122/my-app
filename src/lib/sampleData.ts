@@ -102,6 +102,36 @@ const CANNOT = "CANNOT_DETECT_SWC";
 const UP = "ABOVE_MDC_INCREASE";
 const SWC_UP = "MEETS_SWC_INCREASE";
 
+/** 카드 기대 결과 한 줄 (card_expected_results.csv 의 사본, PLAN 16번). detail 은 없으면 빈 글자. */
+export interface CardExpectedCase {
+  caseId: string;
+  athleteId: string;
+  protocolId: string;
+  card: string;
+  detail: string;
+}
+
+function c(caseId: string, athleteNo: string, protocolId: string, card: string, detail: string): CardExpectedCase {
+  return { caseId, athleteId: `A${athleteNo}`, protocolId, card, detail };
+}
+
+export const SAMPLE_CARD_EXPECTED: readonly CardExpectedCase[] = [
+  c("T01", "01", "P-A", "MEANINGFUL_CHANGE", "INCREASE"),
+  c("T02", "02", "P-B", "REVIEW_PROTOCOL", "INCREASE"),
+  c("T03", "03", "P-A", "WITHIN_NOISE", ""),
+  c("T04", "04", "P-A", "MEANINGFUL_CHANGE", "DECREASE"),
+  c("T05", "05", "P-B", "REVIEW_PROTOCOL", "INCREASE"),
+  c("T06", "06", "P-B", "MEANINGFUL_CHANGE", "INCREASE"),
+  c("T07", "07", "P-A", "MEANINGFUL_CHANGE", "INCREASE"),
+  c("T08", "08", "P-A", "CHECK_DATA", "MISSING_SESSION"),
+  c("T09", "09", "P-A", "CHECK_DATA", "OUT_OF_RANGE"),
+  c("T10", "10", "P-C", "SECURE_SEM", "SEM_MISSING"),
+  c("T11", "11", "P-A", "CHECK_DATA", "DUPLICATE_SESSION"),
+  c("T12", "12", "P-A", "CHECK_DATA", "NON_NUMERIC"),
+  c("T13", "13", "P-Z", "CHECK_DATA", "UNKNOWN_PROTOCOL"),
+  c("T14", "14", "P-D", "SET_SWC", ""),
+];
+
 export const SAMPLE_EXPECTED: readonly ExpectedCase[] = [
   e("T01", "01", "P-A", "OK", "", "2.000", "1.109", UP, SWC_UP, CAN),
   e("T02", "02", "P-B", "OK", "", "2.000", "2.772", "WITHIN_MDC", SWC_UP, CANNOT),
