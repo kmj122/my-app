@@ -29,8 +29,10 @@ const BADGE_COLOR: Record<Sensitivity, string> = {
   NOT_ASSESSED: "bg-slate-100 text-slate-600",
 };
 
-const inputClass = "w-full min-w-0 rounded border border-slate-300 bg-white px-2 py-1 text-sm";
-const BIG_INPUT = "mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base";
+const inputClass =
+  "w-full min-w-0 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100";
+const BIG_INPUT =
+  "mt-1.5 h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-navy-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100";
 
 function criterionNote(label: string, status: CriterionStatus): string | null {
   if (status === "OK") return null;
@@ -49,19 +51,19 @@ export function ProtocolSettings() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <h2 className="text-xl font-semibold">분석 설정</h2>
+      <h2 className="text-2xl font-bold tracking-tight text-navy-900">분석 설정</h2>
       <p className="mt-1 text-sm text-slate-600">
         측정 장비·절차의 자료나 코치가 정한 기준이 있을 때만 입력하세요. 모르면 비워 두어도 됩니다. 비워 두면 변화량만 보여 주고,
         변화의 의미는 판단하지 않습니다. 앱이 임의의 값을 넣지 않습니다.
       </p>
 
-      <div className="mt-4 rounded-md border border-slate-300 bg-white p-4" data-testid="basic-criteria">
+      <div className="mt-5 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6" data-testid="basic-criteria">
         {def === null ? (
           <div className="text-sm text-slate-600">
             <p>「기록 입력」에서 쓰는 기본 측정 설정이 없습니다. (예시 데이터를 불러오면 바뀔 수 있습니다.)</p>
             <button
               type="button"
-              className="mt-2 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm hover:bg-slate-50"
+              className="mt-2 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50"
               onClick={() => dispatch({ type: "addProtocol", initial: defaultProtocolInput() })}
             >
               기본 측정 설정 추가
@@ -69,7 +71,7 @@ export function ProtocolSettings() {
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block text-sm font-medium">
+            <label className="block text-sm font-semibold text-slate-700">
               측정 오차 자료 (SEM, cm)
               <input
                 className={BIG_INPUT + " tabular-nums"}
@@ -84,7 +86,7 @@ export function ProtocolSettings() {
                 <span className="mt-1 block text-xs font-normal text-amber-700">{criterionNote("측정 오차 자료", defView.sem)}</span>
               )}
             </label>
-            <label className="block text-sm font-medium">
+            <label className="block text-sm font-semibold text-slate-700">
               중요하게 볼 변화 크기 (SWC, cm)
               <input
                 className={BIG_INPUT + " tabular-nums"}
@@ -107,9 +109,14 @@ export function ProtocolSettings() {
         <p className="mt-3 text-xs text-slate-500">두 값이 모두 있으면 「기록 입력」과 「팀 결과」에서 정밀 분석과 다음 행동 카드가 함께 나옵니다.</p>
       </div>
 
-      <details className="mt-6 rounded-md border border-slate-300 bg-white" data-testid="advanced-settings">
-        <summary className="cursor-pointer px-4 py-3 text-sm font-medium">상세 설정 펼치기 (측정 방식별 설정 · 근거 · 허용 범위 · 측정 민감도 · 자가 검증)</summary>
-        <div className="border-t border-slate-200 p-4">
+      <details className="mt-6 rounded-2xl bg-white shadow-sm ring-1 ring-slate-200" data-testid="advanced-settings">
+        <summary className="flex cursor-pointer items-center justify-between gap-2 rounded-2xl px-5 py-4 text-sm font-semibold text-navy-900 hover:bg-slate-50">
+          상세 설정 펼치기 (측정 방식별 설정 · 근거 · 허용 범위 · 측정 민감도 · 자가 검증)
+          <span aria-hidden="true" className="text-slate-400">
+            ▾
+          </span>
+        </summary>
+        <div className="border-t border-slate-200 p-5">
       {state.sampleLoaded && (
         <p data-testid="sample-settings-note" className="mb-3 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-900">
           예시 데이터의 측정 방식(P-A~P-D)에 들어 있는 SEM·SWC는 시연용 가상 예시값입니다. 「기본 측정」과 실제 선수 기록에는 자동으로 적용되지 않습니다.
@@ -124,9 +131,9 @@ export function ProtocolSettings() {
           아직 입력한 프로토콜이 없습니다. 아래 「프로토콜 추가」를 눌러 시작하세요.
         </p>
       ) : (
-        <div className="mt-4 overflow-x-auto rounded-md border border-slate-300 bg-white">
+        <div className="mt-4 overflow-x-auto rounded-xl ring-1 ring-slate-200">
           <table className="w-full min-w-[60rem] text-left text-sm">
-            <thead className="bg-slate-100 text-xs text-slate-600">
+            <thead className="bg-slate-50 text-xs font-semibold text-slate-500">
               <tr>
                 <th className="px-2 py-2 font-medium">프로토콜</th>
                 <th className="px-2 py-2 font-medium">SEM (cm)</th>
@@ -202,7 +209,7 @@ export function ProtocolSettings() {
 
       <button
         type="button"
-        className="mt-3 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm hover:bg-slate-50"
+        className="mt-3 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50"
         onClick={() => dispatch({ type: "addProtocol" })}
       >
         + 프로토콜 추가
@@ -214,8 +221,8 @@ export function ProtocolSettings() {
         <li>※ 근거 칸은 비어 있어도 판정에는 영향이 없지만, 값의 출처를 남겨 두세요.</li>
       </ul>
 
-      <div className="mt-6 rounded-md border border-slate-200 bg-white p-4">
-        <h3 className="text-sm font-semibold">측정 민감도란?</h3>
+      <div className="mt-6 rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
+        <h3 className="text-sm font-bold text-navy-900">측정 민감도란?</h3>
         <dl className="mt-2 space-y-2 text-xs text-slate-600">
           {(["CAN_DETECT_SWC", "CANNOT_DETECT_SWC", "NOT_ASSESSED"] as const).map((k) => (
             <div key={k}>

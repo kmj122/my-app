@@ -6,8 +6,10 @@ import { useRef, useState } from "react";
 import { CsvFileError, parseMeasurementsCsv } from "@/lib/csv";
 import { useAppState } from "@/state/AppStateProvider";
 
-const inputClass = "w-full min-w-0 rounded border border-slate-300 bg-white px-2 py-1 text-sm";
-const buttonClass = "rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm hover:bg-slate-50";
+const inputClass =
+  "w-full min-w-0 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100";
+const buttonClass =
+  "rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50";
 
 type Notice = { kind: "ok" | "error"; text: string };
 
@@ -39,7 +41,7 @@ export function MeasurementInput() {
 
   return (
     <div>
-      <h3 className="text-base font-semibold">여러 선수 한 번에 입력</h3>
+      <h3 className="text-base font-bold text-navy-900">여러 선수 한 번에 입력</h3>
       <p className="mt-1 text-sm text-slate-600">
         선수별 이전(BASELINE)·현재(CURRENT) 점프 높이를 표에 직접 입력하거나 CSV 파일로 올리세요.
       </p>
@@ -109,9 +111,9 @@ export function MeasurementInput() {
           아직 입력한 기록이 없습니다. 「+ 행 추가」로 직접 입력하거나, CSV를 올리거나, 예시 데이터를 불러오세요.
         </p>
       ) : (
-        <div className="mt-4 overflow-x-auto rounded-md border border-slate-300 bg-white">
+        <div className="mt-4 overflow-x-auto rounded-xl ring-1 ring-slate-200">
           <table className="w-full min-w-[52rem] text-left text-sm">
-            <thead className="bg-slate-100 text-xs text-slate-600">
+            <thead className="bg-slate-50 text-xs font-semibold text-slate-500">
               <tr>
                 <th className="px-2 py-2 font-medium">구분</th>
                 <th className="px-2 py-2 font-medium">선수 ID</th>
@@ -183,7 +185,7 @@ export function MeasurementInput() {
         </button>
         <button
           type="button"
-          className="rounded-md bg-slate-800 px-3 py-1.5 text-sm text-white hover:bg-slate-700"
+          className="rounded-lg bg-navy-900 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
           onClick={() => dispatch({ type: "setTab", tab: "results" })}
         >
           분석 결과 보기 →

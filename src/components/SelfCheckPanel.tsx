@@ -18,22 +18,22 @@ export function SelfCheckPanel() {
     : [];
 
   return (
-    <section className="mt-8 rounded-md border border-slate-300 bg-white p-4">
-      <h3 className="text-sm font-semibold">자가 검증</h3>
+    <section className="mt-8 rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
+      <h3 className="text-sm font-bold text-navy-900">자가 검증</h3>
       <p className="mt-1 text-sm text-slate-500">
         내장된 원본 사본으로 판정과 카드가 기대 결과와 같은지 확인합니다. 위에서 입력한 SEM·SWC에는 영향을 받지 않습니다.
       </p>
       <button
         type="button"
         onClick={() => setReport(runSelfCheck())}
-        className="mt-3 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm hover:bg-slate-50"
+        className="mt-3 rounded-lg bg-navy-900 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
       >
         자가 검증 실행
       </button>
 
       {report && (
         <div role="status" data-testid="self-check-result" className="mt-3 text-sm">
-          <p className={report.allPassed ? "font-semibold text-emerald-700" : "font-semibold text-red-700"}>
+          <p className={report.allPassed ? "font-bold text-emerald-700" : "font-bold text-red-700"}>
             {report.allPassed ? "모두 통과했습니다." : "통과하지 못한 검사가 있습니다."}
           </p>
           <p className="mt-1 tabular-nums">{lines.map(([n, p, t]) => `${n} ${p}/${t}`).join(", ")}</p>
@@ -46,7 +46,8 @@ export function SelfCheckPanel() {
               ))}
             </ul>
           )}
-          {[...report.expected.mismatches.map((m) => `${m.caseId} ${m.item}: ${m.got} (기대 ${m.want})`),
+          {[
+            ...report.expected.mismatches.map((m) => `${m.caseId} ${m.item}: ${m.got} (기대 ${m.want})`),
             ...report.cards.mismatches.map((m) => `${m.caseId} 카드: ${m.got} (기대 ${m.want})`),
             ...[...report.units.checks, ...report.cardUnits.checks].filter((c) => !c.ok).map((c) => `${c.id} ${c.name}: 실패`),
           ].map((t) => (

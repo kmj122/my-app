@@ -15,7 +15,11 @@ export function AppTabs() {
 
   return (
     <div>
-      <div role="tablist" aria-label="화면 선택" className="flex flex-wrap gap-1 border-b border-slate-300">
+      <div
+        role="tablist"
+        aria-label="화면 선택"
+        className="flex w-full gap-1 rounded-2xl bg-white p-1.5 shadow-sm ring-1 ring-slate-200 sm:inline-flex sm:w-auto"
+      >
         {TABS.map((t) => {
           const selected = t.id === menuId;
           return (
@@ -28,10 +32,10 @@ export function AppTabs() {
               aria-controls={`panel-${menuId}`}
               onClick={() => dispatch({ type: "setTab", tab: t.id })}
               className={
-                "-mb-px rounded-t-md border px-5 py-2 text-base font-medium " +
+                "flex-1 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors sm:flex-none sm:px-7 sm:text-base " +
                 (selected
-                  ? "border-slate-300 border-b-background bg-background text-slate-900"
-                  : "border-transparent text-slate-500 hover:text-slate-800")
+                  ? "bg-navy-900 text-white shadow"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-navy-900")
               }
             >
               {t.label}
@@ -40,7 +44,7 @@ export function AppTabs() {
         })}
       </div>
 
-      <section id={`panel-${menuId}`} role="tabpanel" aria-labelledby={`tab-${menuId}`} className="py-6">
+      <section id={`panel-${menuId}`} role="tabpanel" aria-labelledby={`tab-${menuId}`} className="pb-10 pt-6">
         {state.tab === "simple" ? (
           <SimpleCheck />
         ) : state.tab === "results" ? (

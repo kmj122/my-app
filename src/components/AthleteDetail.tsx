@@ -56,20 +56,25 @@ export function AthleteDetail() {
     <div className="mx-auto max-w-2xl">
       <button
         type="button"
-        className="text-sm text-slate-600 underline-offset-2 hover:underline"
+        className="rounded-lg px-2 py-1 text-sm font-semibold text-blue-700 hover:bg-blue-50"
         onClick={() => dispatch({ type: "setTab", tab: "results" })}
       >
         ← 팀 결과로
       </button>
-      <h2 className="mt-2 text-xl font-semibold">선수 상세: {bundle.athleteLabel}</h2>
+      <h2 className="mt-2 text-2xl font-bold tracking-tight text-navy-900">선수 상세: {bundle.athleteLabel}</h2>
 
-      <section data-testid="action-card" className="mt-3 rounded-md border border-slate-300 bg-white p-5">
+      <section data-testid="action-card" className="mt-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6">
         <ChangeResult key={bundle.key + bundle.baselineText + bundle.currentText} bundle={bundle} />
       </section>
 
-      <details className="mt-6 rounded-md border border-slate-300 bg-white" data-testid="detail-analysis">
-        <summary className="cursor-pointer px-4 py-3 text-sm font-medium">상세 분석 보기 (측정 오차 기준·실용 기준 그래프와 판정)</summary>
-        <div className="border-t border-slate-200 p-4">
+      <details className="mt-6 rounded-2xl bg-white shadow-sm ring-1 ring-slate-200" data-testid="detail-analysis">
+        <summary className="flex cursor-pointer items-center justify-between gap-2 rounded-2xl px-5 py-4 text-sm font-semibold text-navy-900 hover:bg-slate-50">
+          상세 분석 보기 (측정 오차 기준·실용 기준 그래프와 판정)
+          <span aria-hidden="true" className="text-slate-400">
+            ▾
+          </span>
+        </summary>
+        <div className="border-t border-slate-200 p-5">
           {state.sampleLoaded && SAMPLE_PROTOCOLS.some((p) => p.protocolId === bundle.protocolId) && (
             <p data-testid="sample-criteria-note" className="mb-2 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-900">
               이 화면의 측정 오차(SEM)와 중요 변화 기준(SWC)은 시연용 가상 예시값입니다. 실제 선수 기록에는 자동으로 적용되지 않습니다.
