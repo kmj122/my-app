@@ -1,9 +1,10 @@
 "use client";
 
-// 화면 ① 측정 기준 설정 (PLAN 10번)
-// 프로토콜별 SEM·SWC·근거·허용 범위를 입력받고, MDC95 와 측정 민감도를 입력 즉시 보여 준다.
+// 분석 설정 (PLAN 10번 화면 ①): 위쪽에는 SEM·SWC 두 칸만 보이고,
+// 프로토콜별 설정·근거·허용 범위·MDC95·측정 민감도·자가 검증은 「상세 설정 펼치기」 안에 있다.
 import type { ReactNode } from "react";
 import { fmt3 } from "@/lib/format";
+import { DEFAULT_PROTOCOL_ID, defaultProtocolInput } from "@/lib/simpleMode";
 import { buildProtocolViews, CRITERION_STATUS_KO, type CriterionStatus } from "@/lib/protocolView";
 import type { Sensitivity } from "@/lib/types";
 import { useAppState } from "@/state/AppStateProvider";
@@ -29,6 +30,7 @@ const BADGE_COLOR: Record<Sensitivity, string> = {
 };
 
 const inputClass = "w-full min-w-0 rounded border border-slate-300 bg-white px-2 py-1 text-sm";
+const BIG_INPUT = "mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base";
 
 function criterionNote(label: string, status: CriterionStatus): string | null {
   if (status === "OK") return null;
@@ -39,11 +41,76 @@ export function ProtocolSettings() {
   const { state, dispatch } = useAppState();
   const rows = state.protocols;
   const views = buildProtocolViews(rows);
+  // 「기록 입력」 화면이 쓰는 기본 측정 설정 (없으면 아래 상세 설정에서 직접 만든다)
+  const defaultIndex = rows.findIndex((r) => r.protocolId.trim() === DEFAULT_PROTOCOL_ID);
+  const def = defaultIndex >= 0 ? rows[defaultIndex] : null;
+  const defView = defaultIndex >= 0 ? views[defaultIndex] : null;
+  const setDef = (patch: Record<string, string>) => def && dispatch({ type: "updateProtocol", uid: def.uid, patch });
 
   return (
-    <div>
-      <h2 className="text-lg font-semibold">① 측정 기준 설정</h2>
+    <div className="mx-auto max-w-5xl">
+      <h2 className="text-xl font-semibold">분석 설정</h2>
       <p className="mt-1 text-sm text-slate-600">
+        측정 장비·절차의 자료나 코치가 정한 기준이 있을 때만 입력하세요. 모르면 비워 두어도 됩니다. 비워 두면 변화량만 보여 주고,
+        변화의 의미는 판단하지 않습니다. 앱이 임의의 값을 넣지 않습니다.
+      </p>
+
+      <div className="mt-4 rounded-md border border-slate-300 bg-white p-4" data-testid="basic-criteria">
+        {def === null ? (
+          <div className="text-sm text-slate-600">
+            <p>「기록 입력」에서 쓰는 기본 측정 설정이 없습니다. (예시 데이터를 불러오면 바뀔 수 있습니다.)</p>
+            <button
+              type="button"
+              className="mt-2 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm hover:bg-slate-50"
+              onClick={() => dispatch({ type: "addProtocol", initial: defaultProtocolInput() })}
+            >
+              기본 측정 설정 추가
+            </button>
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="block text-sm font-medium">
+              측정 오차 자료 (SEM, cm)
+              <input
+                className={BIG_INPUT + " tabular-nums"}
+                inputMode="decimal"
+                aria-label="측정 오차 자료(SEM)"
+                placeholder="예: 0.40"
+                value={def.sem}
+                onChange={(e) => setDef({ sem: e.target.value })}
+              />
+              <span className="mt-1 block text-xs font-normal text-slate-500">측정 장비·절차의 신뢰도 자료(검사-재검사)가 있을 때 입력</span>
+              {defView && defView.sem !== "EMPTY" && criterionNote("측정 오차 자료", defView.sem) && (
+                <span className="mt-1 block text-xs font-normal text-amber-700">{criterionNote("측정 오차 자료", defView.sem)}</span>
+              )}
+            </label>
+            <label className="block text-sm font-medium">
+              중요하게 볼 변화 크기 (SWC, cm)
+              <input
+                className={BIG_INPUT + " tabular-nums"}
+                inputMode="decimal"
+                aria-label="중요하게 볼 변화 크기(SWC)"
+                placeholder="예: 1.20"
+                value={def.swc}
+                onChange={(e) => setDef({ swc: e.target.value })}
+              />
+              <span className="mt-1 block text-xs font-normal text-slate-500">코치가 근거를 바탕으로 정한 값이 있을 때 입력</span>
+              {defView && defView.swc !== "EMPTY" && criterionNote("중요 변화 크기", defView.swc) && (
+                <span className="mt-1 block text-xs font-normal text-amber-700">{criterionNote("중요 변화 크기", defView.swc)}</span>
+              )}
+            </label>
+            {defView?.error && (
+              <p className="text-sm text-red-600 sm:col-span-2">⚠ {defView.error} 상세 설정에서 확인해 주세요.</p>
+            )}
+          </div>
+        )}
+        <p className="mt-3 text-xs text-slate-500">두 값이 모두 있으면 「기록 입력」과 「팀 결과」에서 정밀 분석과 다음 행동 카드가 함께 나옵니다.</p>
+      </div>
+
+      <details className="mt-6 rounded-md border border-slate-300 bg-white" data-testid="advanced-settings">
+        <summary className="cursor-pointer px-4 py-3 text-sm font-medium">상세 설정 펼치기 (측정 방식별 설정 · 근거 · 허용 범위 · 측정 민감도 · 자가 검증)</summary>
+        <div className="border-t border-slate-200 p-4">
+      <p className="text-sm text-slate-600">
         측정 방식(프로토콜)마다 측정 오차(SEM)와 중요 변화 기준(SWC)을 입력하세요. MDC95는 SEM으로 자동 계산합니다. (MDC95 = 1.96 × SEM × √2)
       </p>
 
@@ -155,6 +222,8 @@ export function ProtocolSettings() {
       </div>
 
       <SelfCheckPanel />
+        </div>
+      </details>
     </div>
   );
 }

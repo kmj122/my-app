@@ -1,35 +1,28 @@
 "use client";
 
-// 화면 ③ 팀 결과표 (PLAN 12번)
-// 선수·프로토콜 묶음마다 1행: 변화량, MDC95, 두 판정(따로), 측정 민감도, 기록 상태·사유.
-// 마지막 칸에 코치 후속 행동 카드의 "분석 결과 한 줄 + 다음 행동 한 줄"을 보이고, 카드 공통 안내 문구는 맨 아래 한 번만 둔다.
+// 팀 결과: 누가 얼마나 변했는지를 먼저 보여 준다. (PLAN 12번 화면 ③ 을 단순화)
+// 기본 열은 선수·이전·오늘·변화·결과 한 줄이고, 프로토콜·MDC95·두 판정·측정 민감도는 「상세 분석 열 보기」 안에 둔다.
 import { useMemo, useState } from "react";
+import { FOOTER } from "@/lib/cardText";
 import {
   format3,
-  formatSigned,
   MDC_STATUS_KO,
   reasonKo,
   RECORD_STATUS_KO,
   SENSITIVITY_KO,
   SWC_STATUS_KO,
 } from "@/lib/labels";
-import { cardShort, FOOTER } from "@/lib/cardText";
-import { selectCard } from "@/lib/selectCard";
+import { describeSimple } from "@/lib/simpleMode";
 import { RECORD_STATUSES, type RecordStatus } from "@/lib/types";
 import { useAppState } from "@/state/AppStateProvider";
 import { useAnalysis } from "@/state/useAnalysis";
 
 type Filter = "ALL" | RecordStatus;
 
-const STATUS_COLOR: Record<RecordStatus, string> = {
-  OK: "bg-emerald-100 text-emerald-800",
-  DATA_ERROR: "bg-red-100 text-red-800",
-  CRITERIA_MISSING: "bg-amber-100 text-amber-800",
-};
-
 export function TeamResultTable() {
   const { state, dispatch } = useAppState();
   const [filter, setFilter] = useState<Filter>("ALL");
+  const [detailCols, setDetailCols] = useState(false);
   const { bundles, registryErrors } = useAnalysis();
 
   const counts = useMemo(() => {
@@ -39,76 +32,90 @@ export function TeamResultTable() {
   }, [bundles]);
 
   const shown = filter === "ALL" ? bundles : bundles.filter((b) => b.judge.recordStatus === filter);
+  const cols = detailCols ? 12 : 6;
 
   return (
     <div>
-      <h2 className="text-lg font-semibold">③ 팀 결과표</h2>
+      <h2 className="text-xl font-semibold">팀 결과</h2>
       <p className="mt-1 text-sm text-slate-600">
-        선수·프로토콜마다 변화량(현재 − 이전)과 두 기준의 판정을 따로 보여 줍니다. 두 판정을 하나의 점수로 합치지 않습니다.
+        선수별 이전·오늘 점프 높이와 변화량입니다. 선수 이름이나 「그래프 보기」를 누르면 상세 그래프가 열립니다.
       </p>
 
       {registryErrors.length > 0 && (
         <p role="alert" className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          ① 측정 기준 설정에 사용할 수 없는 프로토콜 {registryErrors.length}개가 있습니다. 그 프로토콜의 기록은 &quot;등록되지
-          않은 측정 방식&quot;으로 표시됩니다.
+          분석 설정에 사용할 수 없는 측정 방식 설정이 {registryErrors.length}개 있습니다. 그 설정의 기록은 &quot;등록되지 않은 측정
+          방식&quot;으로 표시됩니다.
         </p>
       )}
 
       {bundles.length === 0 ? (
         <p className="mt-4 rounded-md border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-500">
-          분석할 기록이 없습니다. ② 측정값 입력에서 기록을 입력하거나 예시 데이터를 불러오세요.
+          아직 입력한 기록이 없습니다. 「기록 입력」에서 선수 기록을 넣으면 여기에 쌓입니다.
         </p>
       ) : (
         <>
-          <div role="group" aria-label="상태별 보기" className="mt-4 flex flex-wrap gap-2">
-            {(["ALL", ...RECORD_STATUSES] as const).map((f) => (
-              <button
-                key={f}
-                type="button"
-                aria-pressed={filter === f}
-                onClick={() => setFilter(f)}
-                className={
-                  "rounded-full border px-3 py-1 text-sm " +
-                  (filter === f
-                    ? "border-slate-800 bg-slate-800 text-white"
-                    : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50")
-                }
-              >
-                {f === "ALL" ? "전체" : RECORD_STATUS_KO[f]} {counts[f]}
-              </button>
-            ))}
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <div role="group" aria-label="상태별 보기" className="flex flex-wrap gap-2">
+              {(["ALL", ...RECORD_STATUSES] as const).map((f) => (
+                <button
+                  key={f}
+                  type="button"
+                  aria-pressed={filter === f}
+                  onClick={() => setFilter(f)}
+                  className={
+                    "rounded-full border px-3 py-1 text-sm " +
+                    (filter === f
+                      ? "border-slate-800 bg-slate-800 text-white"
+                      : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50")
+                  }
+                >
+                  {f === "ALL" ? "전체" : RECORD_STATUS_KO[f]} {counts[f]}
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              aria-pressed={detailCols}
+              onClick={() => setDetailCols((v) => !v)}
+              className="ml-auto rounded-md border border-slate-300 bg-white px-3 py-1 text-sm hover:bg-slate-50"
+            >
+              {detailCols ? "상세 분석 열 숨기기" : "상세 분석 열 보기"}
+            </button>
           </div>
 
           <div className="mt-3 overflow-x-auto rounded-md border border-slate-300 bg-white">
-            <table className="w-full min-w-[64rem] text-left text-sm">
+            <table className="w-full text-left text-sm">
               <thead className="bg-slate-100 text-xs text-slate-600">
                 <tr>
                   <th className="px-2 py-2 font-medium">선수</th>
-                  <th className="px-2 py-2 font-medium">프로토콜</th>
-                  <th className="px-2 py-2 font-medium">이전</th>
-                  <th className="px-2 py-2 font-medium">현재</th>
-                  <th className="px-2 py-2 font-medium">변화량 (cm)</th>
-                  <th className="px-2 py-2 font-medium">MDC95 (cm)</th>
-                  <th className="px-2 py-2 font-medium">오차 판정</th>
-                  <th className="px-2 py-2 font-medium">실용 판정</th>
-                  <th className="px-2 py-2 font-medium">측정 민감도</th>
-                  <th className="px-2 py-2 font-medium">기록 상태</th>
-                  <th className="px-2 py-2 font-medium">다음 행동 한 줄</th>
+                  <th className="px-2 py-2 font-medium">이전 (cm)</th>
+                  <th className="px-2 py-2 font-medium">오늘 (cm)</th>
+                  <th className="px-2 py-2 font-medium">변화</th>
+                  <th className="px-2 py-2 font-medium">결과와 다음 행동</th>
+                  {detailCols && (
+                    <>
+                      <th className="px-2 py-2 font-medium">프로토콜</th>
+                      <th className="px-2 py-2 font-medium">MDC95 (cm)</th>
+                      <th className="px-2 py-2 font-medium">오차 판정</th>
+                      <th className="px-2 py-2 font-medium">실용 판정</th>
+                      <th className="px-2 py-2 font-medium">측정 민감도</th>
+                      <th className="px-2 py-2 font-medium">기록 상태</th>
+                    </>
+                  )}
+                  <th className="px-2 py-2" />
                 </tr>
               </thead>
               <tbody>
                 {shown.length === 0 ? (
                   <tr>
-                    <td colSpan={11}className="px-2 py-4 text-center text-slate-500">
+                    <td colSpan={cols} className="px-2 py-4 text-center text-slate-500">
                       이 상태의 기록이 없습니다.
                     </td>
                   </tr>
                 ) : (
                   shown.map((b) => {
                     const j = b.judge;
-                    const reason = reasonKo(j.reason);
-                    const sel = selectCard(j);
-                    const short = cardShort(sel.card, sel.detail);
+                    const v = describeSimple(b);
                     return (
                       <tr
                         key={b.key}
@@ -127,23 +134,50 @@ export function TeamResultTable() {
                             {b.athleteLabel}
                           </button>
                         </td>
-                        <td className="px-2 py-2">{b.protocolId}</td>
-                        <td className="px-2 py-2 tabular-nums">{b.baselineText || "—"}</td>
-                        <td className="px-2 py-2 tabular-nums">{b.currentText || "—"}</td>
-                        <td className="px-2 py-2 tabular-nums">{formatSigned(j.change)}</td>
-                        <td className="px-2 py-2 tabular-nums">{format3(j.mdc)}</td>
-                        <td className="px-2 py-2">{MDC_STATUS_KO[j.mdcStatus]}</td>
-                        <td className="px-2 py-2">{SWC_STATUS_KO[j.swcStatus]}</td>
-                        <td className="px-2 py-2">{SENSITIVITY_KO[j.sensitivity]}</td>
-                        <td className="px-2 py-2">
-                          <span className={`inline-block rounded px-2 py-0.5 text-xs font-medium ${STATUS_COLOR[j.recordStatus]}`}>
-                            {RECORD_STATUS_KO[j.recordStatus]}
-                          </span>
-                          {reason && <div className="mt-1 text-xs text-slate-600">{reason}</div>}
+                        <td className="px-2 py-2 tabular-nums">{v.kind === "change" ? format3(v.baseline) : b.baselineText || "—"}</td>
+                        <td className="px-2 py-2 tabular-nums">{v.kind === "change" ? format3(v.current) : b.currentText || "—"}</td>
+                        <td className="px-2 py-2 font-semibold tabular-nums" data-testid="team-change">
+                          {v.kind === "change" ? v.changeLine : "—"}
                         </td>
-                        <td className="px-2 py-2" data-testid="card-short">
-                          <div className="text-xs text-slate-600">{short[0]}</div>
-                          <div className="font-medium text-slate-900">{short[1]}</div>
+                        <td className="px-2 py-2" data-testid="team-result">
+                          {v.kind === "error" ? (
+                            <>
+                              <div className="font-medium text-amber-800">{v.title}</div>
+                              <div className="text-xs text-slate-600">사유: {v.reason}</div>
+                            </>
+                          ) : v.precise ? (
+                            <>
+                              <div className="text-xs text-slate-600">{v.precise.short[0]}</div>
+                              <div className="font-medium text-slate-900">{v.precise.short[1]}</div>
+                            </>
+                          ) : (
+                            <div className="text-xs text-slate-600">측정 기준이 없어 변화량만 표시했습니다.</div>
+                          )}
+                        </td>
+                        {detailCols && (
+                          <>
+                            <td className="px-2 py-2">{b.protocolId}</td>
+                            <td className="px-2 py-2 tabular-nums">{format3(j.mdc)}</td>
+                            <td className="px-2 py-2">{MDC_STATUS_KO[j.mdcStatus]}</td>
+                            <td className="px-2 py-2">{SWC_STATUS_KO[j.swcStatus]}</td>
+                            <td className="px-2 py-2">{SENSITIVITY_KO[j.sensitivity]}</td>
+                            <td className="px-2 py-2">
+                              {RECORD_STATUS_KO[j.recordStatus]}
+                              {reasonKo(j.reason) && <div className="mt-1 text-xs text-slate-600">{reasonKo(j.reason)}</div>}
+                            </td>
+                          </>
+                        )}
+                        <td className="px-2 py-2 whitespace-nowrap">
+                          <button
+                            type="button"
+                            className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs hover:bg-slate-50"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              dispatch({ type: "openDetail", key: b.key });
+                            }}
+                          >
+                            그래프 보기
+                          </button>
                         </td>
                       </tr>
                     );

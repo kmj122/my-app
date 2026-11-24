@@ -85,7 +85,7 @@ export function describeSimple(b: BundleResult): SimpleResultView {
       next,
       rangeHint:
         j.reason === "OUT_OF_RANGE"
-          ? `입력 확인을 위한 임시 허용 범위(${DEFAULT_PLAUSIBLE_MIN}~${DEFAULT_PLAUSIBLE_MAX}cm)를 벗어났습니다. 모든 선수에게 맞는 기준은 아니며 고급 설정에서 바꿀 수 있습니다.`
+          ? `입력 확인을 위한 임시 허용 범위(${DEFAULT_PLAUSIBLE_MIN}~${DEFAULT_PLAUSIBLE_MAX}cm)를 벗어났습니다. 모든 선수에게 맞는 기준은 아니며 분석 설정의 상세 설정에서 바꿀 수 있습니다.`
           : "",
     };
   }

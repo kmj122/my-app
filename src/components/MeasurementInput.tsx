@@ -1,6 +1,6 @@
 "use client";
 
-// 화면 ② 측정값 입력 (PLAN 11번)
+// 여러 선수 한 번에 입력 (PLAN 11번, 이제 「기록 입력」 화면 안에 들어 있다)
 // 표에 직접 입력하거나 CSV 를 올리거나 예시 데이터를 불러온다. 직접 입력과 CSV 기록은 같은 목록에서 보여 준다.
 import { useRef, useState } from "react";
 import { CsvFileError, parseMeasurementsCsv } from "@/lib/csv";
@@ -39,9 +39,9 @@ export function MeasurementInput() {
 
   return (
     <div>
-      <h2 className="text-lg font-semibold">② 측정값 입력</h2>
+      <h3 className="text-base font-semibold">여러 선수 한 번에 입력</h3>
       <p className="mt-1 text-sm text-slate-600">
-        선수·프로토콜별 이전(BASELINE)·현재(CURRENT) 점프 높이를 표에 직접 입력하거나 CSV 파일로 올리세요.
+        선수별 이전(BASELINE)·현재(CURRENT) 점프 높이를 표에 직접 입력하거나 CSV 파일로 올리세요.
       </p>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">

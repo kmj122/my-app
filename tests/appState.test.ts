@@ -31,13 +31,14 @@ describe("초기 상태", () => {
     expect(initialState.protocols).toHaveLength(1);
     expect(initialState.protocols[0]).toMatchObject({ protocolId: "기본 측정", sem: "", swc: "" });
   });
-  it("탭은 기록 입력 + ①~④ 5개", () => {
-    expect(TABS.map((t) => t.id)).toEqual(["simple", "settings", "input", "results", "detail"]);
+  it("상단 메뉴는 기록 입력 / 팀 결과 / 분석 설정 3개 (선수 상세는 메뉴가 아니다)", () => {
+    expect(TABS.map((t) => t.id)).toEqual(["simple", "results", "settings"]);
+    expect(TABS.map((t) => t.label)).toEqual(["기록 입력", "팀 결과", "분석 설정"]);
   });
 });
 
 describe("탭 이동", () => {
-  it("setTab", () => expect(run([{ type: "setTab", tab: "input" }]).tab).toBe("input"));
+  it("setTab", () => expect(run([{ type: "setTab", tab: "settings" }]).tab).toBe("settings"));
   it("탭을 옮겨도 입력값은 유지된다", () => {
     const s = run([
       { type: "addProtocol", initial: { protocolId: "P-A", sem: "0.40" } },

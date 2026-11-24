@@ -6,14 +6,13 @@ import { SAMPLE_MEASUREMENTS, SAMPLE_PROTOCOLS } from "@/lib/sampleData";
 import { defaultProtocolInput, DEFAULT_PROTOCOL_ID, simpleEntries } from "@/lib/simpleMode";
 import type { DirectEntry, Measurement, ProtocolInput } from "@/lib/types";
 
+/** 상단 메뉴는 3개. 선수 상세(detail)는 메뉴가 아니라 팀 결과·기록 입력에서 선수를 골라 여는 화면이다. */
 export const TABS = [
   { id: "simple", label: "기록 입력" },
-  { id: "settings", label: "① 측정 기준 설정 (고급)" },
-  { id: "input", label: "② 측정값 입력" },
-  { id: "results", label: "③ 팀 결과표" },
-  { id: "detail", label: "④ 선수 상세" },
+  { id: "results", label: "팀 결과" },
+  { id: "settings", label: "분석 설정" },
 ] as const;
-export type TabId = (typeof TABS)[number]["id"];
+export type TabId = (typeof TABS)[number]["id"] | "detail";
 
 /** 화면 ①의 한 줄. uid 는 화면에서 줄을 구분하는 번호이고 판정에는 쓰지 않는다. */
 export type ProtocolRow = ProtocolInput & { uid: string };
